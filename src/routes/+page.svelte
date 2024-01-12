@@ -3,21 +3,21 @@
 
 	import { getPostsByCategory, getAllPost } from '$lib/fetching';
 
-	export let data;
-	console.log(data);
-	let posts = data.posts;
-
 	const FILTER_ALL_POSTS = 'all';
+	export let data;
+	let posts = data.posts;
+	let categorySelected = FILTER_ALL_POSTS;
 
 	const filterByCategory = async (category) => {
-		console.log(category);
 		if (category === FILTER_ALL_POSTS) {
 			const response = await getAllPost();
 			posts = response.posts;
+			categorySelected = category;
 			return;
 		}
 		const response = await getPostsByCategory({ category });
 		posts = response.posts;
+		categorySelected = category;
 	};
 </script>
 
@@ -27,7 +27,14 @@
 	<li>
 		<button
 			on:click={() => filterByCategory(FILTER_ALL_POSTS)}
-			class="flex items-center justify-center bg-white text-black rounded-full h-10 w-auto p-5 text-nowrap"
+			class={`
+            ${
+							categorySelected === FILTER_ALL_POSTS
+								? 'bg-zinc-800 text-white'
+								: 'bg-white text-black'
+						}
+            flex items-center justify-center  rounded-full h-10 w-auto p-5 text-nowrap
+            `}
 		>
 			all
 		</button>
@@ -36,7 +43,9 @@
 		<li>
 			<button
 				on:click={() => filterByCategory(name)}
-				class="flex items-center justify-center bg-white text-black rounded-full h-10 w-auto p-5 text-nowrap"
+				class={`
+                ${categorySelected === name ? 'bg-zinc-800 text-white' : 'bg-white text-black'}
+                flex items-center justify-center bg-white text-black rounded-full h-10 w-auto p-5 text-nowrap`}
 			>
 				{name}
 			</button>
