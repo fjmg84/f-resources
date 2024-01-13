@@ -31,26 +31,30 @@
 			<button
 				on:click={() => filterByCategory(FILTER_ALL_POSTS)}
 				class={`
-            ${
-							categorySelected === FILTER_ALL_POSTS
-								? 'bg-zinc-800 text-white'
-								: 'bg-white text-black'
-						}
-            flex items-center justify-center  rounded-full h-10 w-auto p-5 text-nowrap
+				${categorySelected === FILTER_ALL_POSTS ? 'bg-zinc-800 text-white' : 'bg-white text-black'}
+            capitalize flex items-center gap-5 bg-white text-black rounded-full w-auto px-2 py-1 text-nowrap
             `}
 			>
-				{FILTER_ALL_POSTS}
+				<p class="ml-5">{FILTER_ALL_POSTS}</p>
+				<span
+					class="bg-zinc-500 text-xs font-medium text-white w-8 h-8 rounded-full flex items-center justify-center"
+					>{posts.length}</span
+				>
 			</button>
 		</li>
-		{#each data.categories as category}
+		{#each data.categories as { name, count }}
 			<li>
 				<button
-					on:click={() => filterByCategory(category)}
+					on:click={() => filterByCategory(name)}
 					class={`
-                ${categorySelected === category ? 'bg-zinc-800 text-white' : 'bg-white text-black'}
-                capitalize flex items-center justify-center bg-white text-black rounded-full h-10 w-auto p-5 text-nowrap`}
+                ${categorySelected === name ? 'bg-zinc-800 text-white' : 'bg-white text-black'}
+                capitalize flex items-center gap-5 bg-white text-black rounded-full w-auto px-2 py-1 text-nowrap`}
 				>
-					{category}
+					<p class="ml-5">{name}</p>
+					<span
+						class="bg-zinc-500 text-xs font-medium text-white w-8 h-8 rounded-full flex items-center justify-center"
+						>{count >= 100 ? '+99' : count}</span
+					>
 				</button>
 			</li>
 		{/each}

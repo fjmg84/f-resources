@@ -7,7 +7,12 @@ export const load = async () => {
 
 	posts.forEach(({ categories }) => {
 		categories.forEach((category) => {
-			if (!categoryList.includes(category)) categoryList = [...categoryList, category];
+			let index = categoryList.findIndex((item) => item.name === category);
+			if (index < 0) {
+				categoryList = [...categoryList, { name: category, count: 1 }];
+			} else {
+				categoryList[index].count++;
+			}
 		});
 	});
 
