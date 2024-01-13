@@ -1,5 +1,5 @@
 // @ts-nocheck
-const URL_API = 'http://localhost:1337/api';
+const URL_API = 'https://f-resources-api.onrender.com/api';
 
 const getData = async ({ path = '', method = 'GET' }) => {
 	try {
