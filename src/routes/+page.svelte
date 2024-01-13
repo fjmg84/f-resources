@@ -22,8 +22,13 @@
 </script>
 
 <main class="flex flex-col justify-center p-5 lg:p-10 gap-10">
-	<h1 class="text-5xl font-extrabold">
-		Welcome to RESOURCES <span class="text-sm font-thin">(fjmg)</span>
+	<h1 class="text-5xl font-extrabold flex items-end md:items-start flex-wrap">
+		Welcome to <span
+			class="underline text-5xl ml-2 mr-2 text-center font-bold from-purple-600 via-pink-600 to-blue-600 bg-gradient-to-r bg-clip-text text-transparent"
+		>
+			RESOURCES
+		</span>
+		<span class="text-sm font-thin">(fjmg)</span>
 	</h1>
 
 	<ul class="flex gap-5 flex-wrap">
