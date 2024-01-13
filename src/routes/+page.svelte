@@ -60,7 +60,7 @@
 		{/each}
 	</ul>
 
-	<ul class="flex flex-wrap gap-5 items-center justify-center m-10">
+	<ul class="flex flex-wrap gap-5 items-center justify-center">
 		{#if posts.length === 0}
 			<h1 class="text-red-500 text-2xl italic">
 				"{'There is no data to show for this category yet, sorry :('}"
@@ -69,7 +69,7 @@
 
 		{#each posts as { categories, image, description, title, link }}
 			<li
-				class="p-5 flex flex-col gap-5 w-96 h-auto border-solid border-2 border-gray-700 rounded-lg"
+				class="p-5 flex flex-col gap-5 border-solid border-2 border-gray-700 rounded-lg max-w-[410px]"
 			>
 				<img src={image} alt={image} />
 				<p class="text-md italic">{description}</p>
