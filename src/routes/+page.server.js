@@ -1,5 +1,15 @@
-import { getAllPost, getCategories } from '$lib/fetching';
+// @ts-nocheck
+import { getAllPost } from '$lib/fetching';
 
 export const load = async () => {
-	return { categories: (await getCategories()).categories, posts: (await getAllPost()).posts };
+	const { posts } = await getAllPost();
+	let categoryList = [];
+
+	posts.forEach(({ categories }) => {
+		categories.forEach((category) => {
+			if (!categoryList.includes(category)) categoryList = [...categoryList, category];
+		});
+	});
+
+	return { categories: categoryList, posts };
 };
