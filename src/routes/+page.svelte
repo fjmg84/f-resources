@@ -65,7 +65,7 @@
 		{/each}
 	</ul>
 
-	<ul class="flex flex-wrap gap-5 items-center justify-center">
+	<ul class="flex flex-wrap gap-5 items-start justify-center">
 		{#if posts.length === 0}
 			<h1 class="text-red-500 text-2xl italic">
 				"{'There is no data to show for this category yet, sorry :('}"
