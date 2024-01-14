@@ -72,12 +72,14 @@
 			</h1>
 		{/if}
 
-		{#each posts as { categories, image, description, title, link }}
+		{#each posts as { categories, image, description, title, link, free }}
 			<li
-				class="p-5 flex flex-col gap-5 border-solid border-2 border-gray-700 rounded-lg max-w-[410px]"
+				class="relative p-5 flex flex-col gap-5 border-solid border-2 border-gray-700 rounded-lg max-w-[410px]"
 			>
 				<img src={image} alt={image} />
-				<p class="text-md italic">{description}</p>
+				<p class="text-md italic">
+					{description}
+				</p>
 				<div class="flex">
 					<a
 						target="_blank"
@@ -92,6 +94,7 @@
 						>
 					</a>
 				</div>
+
 				<ul class="flex flex-wrap gap-2">
 					{#each categories as category}
 						<li>
@@ -104,6 +107,12 @@
 						</li>
 					{/each}
 				</ul>
+
+				<div>
+					<span class={`${!free && 'hidden'} bg-red-500 px-3 py-1 rounded-3xl font-medium text-sm`}
+						>free</span
+					>
+				</div>
 			</li>
 		{/each}
 	</ul>
