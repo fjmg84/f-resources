@@ -24,8 +24,8 @@ export const getCategories = async () => {
 	return { categories };
 };
 
-export const getAllPost = async () => {
-	const { data, meta } = await getData({ path: '/posts?populate=*' });
+export const getAllPost = async ({ page }) => {
+	const { data, meta } = await getData({ path: `/posts?populate=*&pagination[page]=${page}` });
 
 	return {
 		posts: data.map(({ id, attributes }) => {

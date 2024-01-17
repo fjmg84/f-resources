@@ -5,7 +5,8 @@
 
 	const FILTER_ALL_POSTS = 'All';
 	export let data;
-	let posts = data.posts;
+	let { posts } = data;
+	let { page } = data.meta.pagination;
 	let categorySelected = FILTER_ALL_POSTS;
 
 	const filterByCategory = async (category) => {
@@ -18,6 +19,12 @@
 		const response = await getPostsByCategory({ category });
 		posts = response.posts;
 		categorySelected = category;
+	};
+
+	const showMorePost = async () => {
+		const { posts: data, meta } = await getAllPost({ page: page + 1 });
+		posts = [...posts, ...data];
+		page = meta.pagination.page;
 	};
 </script>
 
@@ -116,4 +123,11 @@
 			</li>
 		{/each}
 	</ul>
+
+	<div class="flex justify-center items-center">
+		<button
+			class="bg-white text-zinc-800 rounded-full px-5 py-2 hover:text-white hover:bg-zinc-800 transition-all duration-300 ease-linear"
+			on:click={showMorePost}>show me more</button
+		>
+	</div>
 </main>

@@ -2,7 +2,8 @@
 import { getAllPost } from '$lib/fetching';
 
 export const load = async () => {
-	const { posts } = await getAllPost();
+	const { posts, meta } = await getAllPost({ page: 1 });
+
 	let categoryList = [];
 
 	posts.forEach(({ categories }) => {
@@ -16,5 +17,5 @@ export const load = async () => {
 		});
 	});
 
-	return { categories: categoryList, posts };
+	return { categories: categoryList, posts, meta };
 };
