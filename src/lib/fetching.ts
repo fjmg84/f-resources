@@ -1,6 +1,8 @@
 // @ts-nocheck
 const URL_API = 'https://f-resources-api.onrender.com/api';
 
+
+
 const getData = async ({ path = '', method = 'GET' }) => {
 	try {
 		let response = await fetch(`${URL_API}${path}`, {

@@ -1,19 +1,20 @@
 <script>
-	// @ts-nocheck
-
 	import { getPostsByCategory, getAllPost } from '$lib/fetching';
+	import { countCategories } from '$lib/services';
 
 	const FILTER_ALL_POSTS = 'All';
 	export let data;
-	let { posts } = data;
-	let { page } = data.meta.pagination;
+
+	let { posts, categories } = data;
+	let { page, pageCount } = data.meta.pagination;
+
 	let categorySelected = FILTER_ALL_POSTS;
 
-	const filterByCategory = async (category) => {
+	const filterByCategory = async (/** @type {string} */ category) => {
 		if (category === FILTER_ALL_POSTS) {
 			const response = await getAllPost({ page: 1 });
 			posts = response.posts;
-			categorySelected = category;
+
 			return;
 		}
 		const response = await getPostsByCategory({ category });
@@ -25,6 +26,8 @@
 		const { posts: data, meta } = await getAllPost({ page: page + 1 });
 		posts = [...posts, ...data];
 		page = meta.pagination.page;
+
+		categories = countCategories({ posts });
 	};
 </script>
 
@@ -54,7 +57,7 @@
 				>
 			</button>
 		</li>
-		{#each data.categories as { name, count }}
+		{#each categories as { name, count }}
 			<li>
 				<button
 					on:click={() => filterByCategory(name)}
@@ -125,9 +128,14 @@
 	</ul>
 
 	<div class="flex justify-center items-center">
-		<button
-			class="bg-white text-zinc-800 rounded-full px-5 py-2 hover:text-white hover:bg-zinc-800 transition-all duration-300 ease-linear"
-			on:click={showMorePost}>show me more</button
-		>
+		{#if page < pageCount}
+			<button
+				class="bg-white text-zinc-800 rounded-full px-5 py-4 hover:text-white hover:bg-zinc-800 transition-all duration-300 ease-linear"
+				on:click={showMorePost}
+				>show me more <span class=" ml-2 bg-zinc-800 text-white px-3 py-3 rounded-full"
+					>{page}/{pageCount}</span
+				></button
+			>
+		{/if}
 	</div>
 </main>

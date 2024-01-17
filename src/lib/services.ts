@@ -1,10 +1,10 @@
-// @ts-nocheck
-import { getAllPost } from '$lib/fetching';
+import type { Category, Post } from "./types";
 
-export const load = async () => {
-	const { posts, meta } = await getAllPost({ page: 1 });
 
-	let categoryList = [];
+export const countCategories = ({ posts = [] }: {posts: Post[]}) => {
+	let categoryList: Category[] = [];
+
+	console.log(posts)
 
 	posts.forEach(({ categories }) => {
 		categories.forEach((category) => {
@@ -17,5 +17,5 @@ export const load = async () => {
 		});
 	});
 
-	return { categories: categoryList, posts, meta };
+	return categoryList;
 };
