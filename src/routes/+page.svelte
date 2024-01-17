@@ -11,7 +11,7 @@
 
 	const filterByCategory = async (category) => {
 		if (category === FILTER_ALL_POSTS) {
-			const response = await getAllPost();
+			const response = await getAllPost({ page: 1 });
 			posts = response.posts;
 			categorySelected = category;
 			return;
