@@ -1,49 +1,47 @@
 <script lang="ts">
-	import { getPostsByCategory, getAllPost } from '$lib/fetching';
-	import { countCategories } from '$lib/services';
-	import type { Meta, Post } from '$lib/types.js';
+	import { ALL_POSTS_QUERY, POSTS_BY_CATEGORY_QUERY } from '$lib/queries.js';
+	import { countCategories } from '$lib/services.js';
+	import type { Connection, Post } from '$lib/types.js';
+	import { GraphQLClient } from 'graphql-request';
 
 	const FILTER_ALL_POSTS = 'All';
-	export let data;
 
-	let { posts, categories } = data;
-	let { page, pageCount } = data.meta.pagination;
+	export let data;
+	let { categories, posts, meta } = data;
+	let { pageSize, hasNextPage } = meta;
 
 	let categorySelected = FILTER_ALL_POSTS;
 
+	const hygraph = new GraphQLClient(import.meta.env.VITE_GRAPHQL_URL, {
+		headers: {}
+	});
+
 	const filterByCategory = (category: string) => async () => {
-		let response: string | { posts: Post[]; meta: Meta } = '';
-
 		if (category === FILTER_ALL_POSTS) {
-			response = await getAllPost({ page: 1 });
-
-			if (typeof response === 'string') return alert('Up sorry, :(');
-
-			posts = response.posts;
-
+			const { posts: allPost }: { posts: Post[] } = await hygraph.request(ALL_POSTS_QUERY);
+			posts = allPost;
 			return;
 		}
 
-		response = await getPostsByCategory({ category });
+		const { posts: postsByCategory }: { posts: Post[] } = await hygraph.request(
+			POSTS_BY_CATEGORY_QUERY,
+			{ category }
+		);
 
-		if (typeof response === 'string') return alert('Up sorry, :(');
-
-		posts = response.posts;
+		posts = postsByCategory;
 		categorySelected = category;
 	};
 
 	const showMorePost = async () => {
-		const response:
-			| string
-			| {
-					posts: Post[];
-					meta: Meta;
-			  } = await getAllPost({ page: page + 1 });
-		if (typeof response === 'string') return alert('Up sorry, :(');
+		let countPage = pageSize * 10;
+		const { posts: newListPosts, postsConnection }: { posts: Post[]; postsConnection: Connection } =
+			await hygraph.request(ALL_POSTS_QUERY, {
+				page: countPage
+			});
 
-		posts = [...posts, ...response.posts];
-		page = response.meta.pagination.page;
-
+		posts = newListPosts;
+		pageSize = countPage;
+		hasNextPage = postsConnection.pageInfo.hasNextPage;
 		categories = countCategories({ posts });
 	};
 </script>
@@ -123,13 +121,13 @@
 				</div>
 
 				<ul class="flex flex-wrap gap-2">
-					{#each categories as category}
+					{#each categories as { name }}
 						<li>
 							<button
-								on:click={() => filterByCategory(category)}
+								on:click={() => filterByCategory(name)}
 								class=" capitalize flex items-center justify-center bg-zinc-800 text-white rounded-full h-8 px-4 text-sm text-nowrap"
 							>
-								{category}
+								{name}
 							</button>
 						</li>
 					{/each}
@@ -145,14 +143,12 @@
 	</ul>
 
 	<div class="flex justify-center items-center">
-		{#if page < pageCount}
+		{#if hasNextPage}
 			<button
 				class="bg-white text-zinc-800 rounded-full px-5 py-4 hover:text-white hover:bg-zinc-800 transition-all duration-300 ease-linear"
 				on:click={showMorePost}
-				>show me more <span class=" ml-2 bg-zinc-800 text-white px-3 py-3 rounded-full"
-					>{page}/{pageCount}</span
-				></button
-			>
+				>show me more
+			</button>
 		{/if}
 	</div>
 </main>

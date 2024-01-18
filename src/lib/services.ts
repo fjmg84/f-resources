@@ -1,11 +1,10 @@
-import type { Category, Post } from "./types";
+import type { Category, Post } from './types';
 
-
-export const countCategories = ({ posts = [] }: {posts: Post[]}) => {
-	let categoryList: Category[] = [];
+export const countCategories = ({ posts = [] }: { posts: Post[] }) => {
+	let categoryList: any[] = [];
 
 	posts.forEach(({ categories }) => {
-		categories.forEach((category) => {
+		categories.forEach(({ name: category }) => {
 			let index = categoryList.findIndex((item) => item.name === category);
 			if (index < 0) {
 				categoryList = [...categoryList, { name: category, count: 1 }];
