@@ -136,7 +136,7 @@
 				</ul>
 
 				<div>
-					<span class={`${!free && 'hidden'} bg-red-500 px-3 py-1 rounded-3xl font-medium text-sm`}
+					<span class={`${!free && 'hidden'} bg-red-700 px-3 py-1 rounded-3xl font-medium text-sm`}
 						>free</span
 					>
 				</div>
