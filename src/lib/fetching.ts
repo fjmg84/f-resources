@@ -7,8 +7,7 @@ const getData = async ({ path = '', method = 'GET' }): Promise<RootObject | unkn
 		let response = await fetch(`${URL_API}${path}`, {
 			method
 		});
-		console.log(response)
-
+		
 		if(response.statusText !== 'OK' && response.ok !== true)  throw new Error('Something bad happened');
 
 		let data = await response.json();
