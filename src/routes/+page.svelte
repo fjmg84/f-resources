@@ -1,6 +1,7 @@
-<script>
+<script lang="ts">
 	import { getPostsByCategory, getAllPost } from '$lib/fetching';
 	import { countCategories } from '$lib/services';
+	import type { Meta, Post } from '$lib/types.js';
 
 	const FILTER_ALL_POSTS = 'All';
 	export let data;
@@ -10,22 +11,38 @@
 
 	let categorySelected = FILTER_ALL_POSTS;
 
-	const filterByCategory = async (/** @type {string} */ category) => {
+	const filterByCategory = (category: string) => async () => {
+		let response: string | { posts: Post[]; meta: Meta } = '';
+
 		if (category === FILTER_ALL_POSTS) {
-			const response = await getAllPost({ page: 1 });
+			response = await getAllPost({ page: 1 });
+
+			if (typeof response === 'string') return alert('Up sorry, :(');
+
 			posts = response.posts;
 
 			return;
 		}
-		const response = await getPostsByCategory({ category });
+
+		response = await getPostsByCategory({ category });
+
+		if (typeof response === 'string') return alert('Up sorry, :(');
+
 		posts = response.posts;
 		categorySelected = category;
 	};
 
 	const showMorePost = async () => {
-		const { posts: data, meta } = await getAllPost({ page: page + 1 });
-		posts = [...posts, ...data];
-		page = meta.pagination.page;
+		const response:
+			| string
+			| {
+					posts: Post[];
+					meta: Meta;
+			  } = await getAllPost({ page: page + 1 });
+		if (typeof response === 'string') return alert('Up sorry, :(');
+
+		posts = [...posts, ...response.posts];
+		page = response.meta.pagination.page;
 
 		categories = countCategories({ posts });
 	};
@@ -44,7 +61,7 @@
 	<ul class="flex gap-5 flex-wrap">
 		<li>
 			<button
-				on:click={() => filterByCategory(FILTER_ALL_POSTS)}
+				on:click={filterByCategory(FILTER_ALL_POSTS)}
 				class={`
 				${categorySelected === FILTER_ALL_POSTS ? 'bg-zinc-800 text-white' : 'bg-white text-black'}
             capitalize flex items-center gap-5 bg-white text-black rounded-full w-auto px-2 py-1 text-nowrap
@@ -60,7 +77,7 @@
 		{#each categories as { name, count }}
 			<li>
 				<button
-					on:click={() => filterByCategory(name)}
+					on:click={filterByCategory(name)}
 					class={`
                 ${categorySelected === name ? 'bg-zinc-800 text-white' : 'bg-white text-black'}
                 capitalize flex items-center gap-5 bg-white text-black rounded-full w-auto px-2 py-1 text-nowrap`}

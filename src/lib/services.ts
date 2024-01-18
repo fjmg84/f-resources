@@ -4,8 +4,6 @@ import type { Category, Post } from "./types";
 export const countCategories = ({ posts = [] }: {posts: Post[]}) => {
 	let categoryList: Category[] = [];
 
-	console.log(posts)
-
 	posts.forEach(({ categories }) => {
 		categories.forEach((category) => {
 			let index = categoryList.findIndex((item) => item.name === category);
