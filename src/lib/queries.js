@@ -9,16 +9,30 @@ export const ALL_CATEGORIES = gql`
 `;
 
 export const ALL_POSTS_QUERY = gql`
-	query {
-		posts {
+	query Post($page: Int) {
+		posts(first: $page) {
+			id
 			title
 			image
 			categories {
+				id
 				name
 			}
 			link
 			free
 			description
+		}
+		postsConnection(first: $page) {
+			edges {
+				node {
+					id
+				}
+			}
+			pageInfo {
+				pageSize
+				hasPreviousPage
+				hasNextPage
+			}
 		}
 	}
 `;

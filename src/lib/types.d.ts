@@ -11,3 +11,12 @@ export interface Post {
 	free: boolean;
 	description: string;
 }
+
+export interface Node {
+	node: { id: string };
+}
+
+export interface Connection {
+	edges: Node[];
+	pageInfo: { pageSize: number; hasPreviousPage: boolean; hasNextPage: boolean };
+}

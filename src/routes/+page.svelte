@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { ALL_POSTS_QUERY, POSTS_BY_CATEGORY_QUERY } from '$lib/queries.js';
-	import type { Post } from '$lib/types.js';
+	import { countCategories } from '$lib/services.js';
+	import type { Connection, Post } from '$lib/types.js';
 	import { GraphQLClient } from 'graphql-request';
 
 	const FILTER_ALL_POSTS = 'All';
 
 	export let data;
-	let { categories, posts } = data;
+	let { categories, posts, meta } = data;
+	let { pageSize, hasNextPage } = meta;
 
 	let categorySelected = FILTER_ALL_POSTS;
 
@@ -30,47 +32,18 @@
 		categorySelected = category;
 	};
 
-	/* 
-
-	let { posts, categories } = data;
-	let { page, pageCount } = data.meta.pagination;
-
-
-	const filterByCategory = (category: string) => async () => {
-		let response: string | { posts: Post[]; meta: Meta } = '';
-
-		if (category === FILTER_ALL_POSTS) {
-			response = await getAllPost({ page: 1 });
-
-			if (typeof response === 'string') return alert('Up sorry, :(');
-
-			posts = response.posts;
-
-			return;
-		}
-
-		response = await getPostsByCategory({ category });
-
-		if (typeof response === 'string') return alert('Up sorry, :(');
-
-		posts = response.posts;
-		categorySelected = category;
-	};
-
 	const showMorePost = async () => {
-		const response:
-			| string
-			| {
-					posts: Post[];
-					meta: Meta;
-			  } = await getAllPost({ page: page + 1 });
-		if (typeof response === 'string') return alert('Up sorry, :(');
+		let countPage = pageSize * 10;
+		const { posts: newListPosts, postsConnection }: { posts: Post[]; postsConnection: Connection } =
+			await hygraph.request(ALL_POSTS_QUERY, {
+				page: countPage
+			});
 
-		posts = [...posts, ...response.posts];
-		page = response.meta.pagination.page;
-
+		posts = newListPosts;
+		pageSize = countPage;
+		hasNextPage = postsConnection.pageInfo.hasNextPage;
 		categories = countCategories({ posts });
-	}; */
+	};
 </script>
 
 <main class="flex flex-col justify-center p-5 lg:p-10 gap-10">
@@ -169,15 +142,13 @@
 		{/each}
 	</ul>
 
-	<!-- <div class="flex justify-center items-center">
-		{#if page < pageCount}
+	<div class="flex justify-center items-center">
+		{#if hasNextPage}
 			<button
 				class="bg-white text-zinc-800 rounded-full px-5 py-4 hover:text-white hover:bg-zinc-800 transition-all duration-300 ease-linear"
 				on:click={showMorePost}
-				>show me more <span class=" ml-2 bg-zinc-800 text-white px-3 py-3 rounded-full"
-					>{page}/{pageCount}</span
-				></button
-			>
+				>show me more
+			</button>
 		{/if}
-	</div> -->
+	</div>
 </main>
