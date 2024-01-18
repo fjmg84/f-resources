@@ -1,15 +1,40 @@
 <script lang="ts">
-	import { getPostsByCategory, getAllPost } from '$lib/fetching';
-	import { countCategories } from '$lib/services';
-	import type { Meta, Post } from '$lib/types.js';
+	import { ALL_POSTS_QUERY, POSTS_BY_CATEGORY_QUERY } from '$lib/queries.js';
+	import type { Post } from '$lib/types.js';
+	import { GraphQLClient } from 'graphql-request';
 
 	const FILTER_ALL_POSTS = 'All';
+
 	export let data;
+	let { categories, posts } = data;
+
+	let categorySelected = FILTER_ALL_POSTS;
+
+	const hygraph = new GraphQLClient(import.meta.env.VITE_GRAPHQL_URL, {
+		headers: {}
+	});
+
+	const filterByCategory = (category: string) => async () => {
+		if (category === FILTER_ALL_POSTS) {
+			const { posts: allPost }: { posts: Post[] } = await hygraph.request(ALL_POSTS_QUERY);
+			posts = allPost;
+			return;
+		}
+
+		const { posts: postsByCategory }: { posts: Post[] } = await hygraph.request(
+			POSTS_BY_CATEGORY_QUERY,
+			{ category }
+		);
+
+		posts = postsByCategory;
+		categorySelected = category;
+	};
+
+	/* 
 
 	let { posts, categories } = data;
 	let { page, pageCount } = data.meta.pagination;
 
-	let categorySelected = FILTER_ALL_POSTS;
 
 	const filterByCategory = (category: string) => async () => {
 		let response: string | { posts: Post[]; meta: Meta } = '';
@@ -45,7 +70,7 @@
 		page = response.meta.pagination.page;
 
 		categories = countCategories({ posts });
-	};
+	}; */
 </script>
 
 <main class="flex flex-col justify-center p-5 lg:p-10 gap-10">
@@ -123,13 +148,13 @@
 				</div>
 
 				<ul class="flex flex-wrap gap-2">
-					{#each categories as category}
+					{#each categories as { name }}
 						<li>
 							<button
-								on:click={() => filterByCategory(category)}
+								on:click={() => filterByCategory(name)}
 								class=" capitalize flex items-center justify-center bg-zinc-800 text-white rounded-full h-8 px-4 text-sm text-nowrap"
 							>
-								{category}
+								{name}
 							</button>
 						</li>
 					{/each}
@@ -144,7 +169,7 @@
 		{/each}
 	</ul>
 
-	<div class="flex justify-center items-center">
+	<!-- <div class="flex justify-center items-center">
 		{#if page < pageCount}
 			<button
 				class="bg-white text-zinc-800 rounded-full px-5 py-4 hover:text-white hover:bg-zinc-800 transition-all duration-300 ease-linear"
@@ -154,5 +179,5 @@
 				></button
 			>
 		{/if}
-	</div>
+	</div> -->
 </main>
