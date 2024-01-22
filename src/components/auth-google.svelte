@@ -1,8 +1,6 @@
 <script>
 	import { signIn, signOut } from '@auth/sveltekit/client';
 	import { page } from '$app/stores';
-
-	console.log($page);
 </script>
 
 <p class="flex flex-col">
@@ -21,7 +19,7 @@
 	{:else}
 		<button
 			on:click={() => signIn('google')}
-			class="bg-white text-zinc-900 px-5 py-1 rounded-full flex items-center gap-2"
+			class="text-sm bg-white text-zinc-900 px-5 py-1 rounded-full flex items-center gap-2"
 			>Sign In with <img
 				src="/google-icon.svg"
 				alt="google icons"

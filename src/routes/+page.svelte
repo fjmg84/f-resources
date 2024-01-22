@@ -3,11 +3,16 @@
 	import { countCategories } from '$lib/services.js';
 	import type { Connection, Post } from '$lib/types.js';
 	import { GraphQLClient } from 'graphql-request';
+	import Scrapping from '../components/scrapping.svelte';
+	import { toasts, ToastContainer, FlatToast } from 'svelte-toasts';
+	import type { ToastType } from 'svelte-toasts/types/common';
 
 	const FILTER_ALL_POSTS = 'All';
 
 	export let data;
-	let { categories, posts, meta } = data;
+	export let form;
+
+	let { categories, posts, meta, session } = data;
 	let { pageSize, hasNextPage } = meta;
 
 	let categorySelected = FILTER_ALL_POSTS;
@@ -15,6 +20,34 @@
 	const hygraph = new GraphQLClient(import.meta.env.VITE_GRAPHQL_URL, {
 		headers: {}
 	});
+
+	const showToast = ({
+		title,
+		description,
+		type
+	}: {
+		title: string;
+		description: string;
+		type: ToastType;
+	}) => {
+		const toast = toasts.add({
+			title,
+			description,
+			duration: 10000, // 0 or negative to avoid auto-remove
+			placement: 'top-right',
+			type,
+			theme: 'dark',
+			onClick: () => {},
+			onRemove: () => {}
+			// component: BootstrapToast, // allows to override toast component/template per toast
+		});
+
+		//toast.remove()
+	};
+
+	if (form?.error) showToast({ title: 'Error', description: form.message, type: 'error' });
+
+	if (form?.success) showToast({ title: 'Info', description: form.message, type: 'success' });
 
 	const filterByCategory = (category: string) => async () => {
 		if (category === FILTER_ALL_POSTS) {
@@ -45,6 +78,10 @@
 		categories = countCategories({ posts });
 	};
 </script>
+
+{#if session}
+	<Scrapping />
+{/if}
 
 <ul class="flex gap-5 flex-wrap">
 	<li>
@@ -141,3 +178,8 @@
 		</button>
 	{/if}
 </div>
+
+<ToastContainer placement="bottom-right" let:data>
+	<FlatToast {data} />
+	<!-- Provider template for your toasts -->
+</ToastContainer>

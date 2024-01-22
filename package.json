@@ -34,6 +34,8 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@auth/sveltekit": "^0.8.0"
+		"@auth/sveltekit": "^0.8.0",
+		"@extractus/article-extractor": "^8.0.5",
+		"svelte-toasts": "^1.1.2"
 	}
 }
