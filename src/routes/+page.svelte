@@ -30,7 +30,7 @@
 		description: string;
 		type: ToastType;
 	}) => {
-		const toast = toasts.add({
+		toasts.add({
 			title,
 			description,
 			duration: 10000, // 0 or negative to avoid auto-remove
