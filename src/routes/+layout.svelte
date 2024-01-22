@@ -1,5 +1,6 @@
 <script>
 	import '../app.css';
+	import AuthGoogle from '../components/auth-google.svelte';
 </script>
 
 <header class="flex justify-between p-5 lg:p-10 flex-wrap gap-5">
@@ -25,6 +26,8 @@
 			>
 		</div>
 	</a>
+
+	<AuthGoogle />
 </header>
 
 <main class="flex flex-col justify-center p-5 lg:p-10 gap-10">

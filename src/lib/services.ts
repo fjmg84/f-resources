@@ -1,4 +1,4 @@
-import type { Category, Post } from './types';
+import type { Post } from './types';
 
 export const countCategories = ({ posts = [] }: { posts: Post[] }) => {
 	let categoryList: any[] = [];
