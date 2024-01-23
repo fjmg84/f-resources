@@ -1,14 +1,12 @@
 <script lang="ts">
-	import { ALL_POSTS_QUERY, POSTS_BY_CATEGORY_QUERY } from '$lib/queries.js';
 	import { countCategories } from '$lib/services.js';
 	import type { Connection, Post } from '$lib/types.js';
-	import { GraphQLClient } from 'graphql-request';
 	import Scrapping from '../components/scrapping.svelte';
-
 	import ListCategories from '../components/list-categories.svelte';
 	import { FILTER_ALL_POSTS } from '$lib/constant';
 	import ListPosts from '../components/list-posts.svelte';
 	import Toast from '../components/toast.svelte';
+	import { allPostQuery, getPostByCategoryQuery, paginationPostQuery } from '$lib/hygraph';
 
 	export let data;
 	export let form;
@@ -18,22 +16,15 @@
 
 	let categorySelected = FILTER_ALL_POSTS;
 
-	const hygraph = new GraphQLClient(import.meta.env.VITE_GRAPHQL_URL, {
-		headers: {}
-	});
-
 	const filterByCategory = (category: string) => async () => {
 		if (category === FILTER_ALL_POSTS) {
-			const { posts: allPost }: { posts: Post[] } = await hygraph.request(ALL_POSTS_QUERY);
+			const { posts: allPost }: { posts: Post[] } = await allPostQuery();
 			posts = allPost;
 			categorySelected = category;
 			return;
 		}
 
-		const { posts: postsByCategory }: { posts: Post[] } = await hygraph.request(
-			POSTS_BY_CATEGORY_QUERY,
-			{ category }
-		);
+		const { posts: postsByCategory }: { posts: Post[] } = await getPostByCategoryQuery(category);
 
 		posts = postsByCategory;
 		categorySelected = category;
@@ -42,9 +33,7 @@
 	const showMorePost = async () => {
 		let countPage = pageSize * 10;
 		const { posts: newListPosts, postsConnection }: { posts: Post[]; postsConnection: Connection } =
-			await hygraph.request(ALL_POSTS_QUERY, {
-				page: countPage
-			});
+			await paginationPostQuery(countPage);
 
 		posts = newListPosts;
 		pageSize = countPage;
