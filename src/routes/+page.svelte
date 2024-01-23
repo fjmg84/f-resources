@@ -6,8 +6,8 @@
 	import Scrapping from '../components/scrapping.svelte';
 	import { toasts, ToastContainer, FlatToast } from 'svelte-toasts';
 	import type { ToastType } from 'svelte-toasts/types/common';
-
-	const FILTER_ALL_POSTS = 'All';
+	import ListCategories from '../components/list-categories.svelte';
+	import { FILTER_ALL_POSTS } from '$lib/constant';
 
 	export let data;
 	export let form;
@@ -53,6 +53,7 @@
 		if (category === FILTER_ALL_POSTS) {
 			const { posts: allPost }: { posts: Post[] } = await hygraph.request(ALL_POSTS_QUERY);
 			posts = allPost;
+			categorySelected = category;
 			return;
 		}
 
@@ -99,22 +100,7 @@
 			>
 		</button>
 	</li>
-	{#each categories as { name, count }}
-		<li>
-			<button
-				on:click={filterByCategory(name)}
-				class={`
-                ${categorySelected === name ? 'bg-zinc-800 text-white' : 'bg-white text-black'}
-                capitalize flex items-center gap-5 bg-white text-black rounded-full w-auto px-2 py-1 text-nowrap`}
-			>
-				<p class="ml-5">{name}</p>
-				<span
-					class="bg-zinc-500 text-xs font-medium text-white w-8 h-8 rounded-full flex items-center justify-center"
-					>{count >= 100 ? '+99' : count}</span
-				>
-			</button>
-		</li>
-	{/each}
+	<ListCategories {categories} {categorySelected} {filterByCategory} />
 </ul>
 
 <ul class="flex flex-wrap gap-5 items-start justify-center">
