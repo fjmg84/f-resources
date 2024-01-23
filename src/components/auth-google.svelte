@@ -20,7 +20,7 @@
 		<button
 			on:click={() => signIn('google')}
 			class="text-sm bg-white text-zinc-900 px-5 py-1 rounded-full flex items-center gap-2"
-			>Sign In with <img
+			>Sign in with <img
 				src="/google-icon.svg"
 				alt="google icons"
 				width="30px"
