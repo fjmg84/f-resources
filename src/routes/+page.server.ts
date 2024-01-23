@@ -29,6 +29,7 @@ export const actions = {
 		const { user } = await locals.getSession();
 		const data = await request.formData();
 		const url = data.get('url');
+		const categories = data.getAll('categories');
 
 		if (url !== null) {
 			const page = await extract(url as string);
@@ -42,7 +43,9 @@ export const actions = {
 				description: page?.description,
 				image,
 				link: url,
-				categories: [{ name: 'IA' }, { name: 'icons' }],
+				categories: categories.map((category) => {
+					return { name: category };
+				}),
 				user: user?.email
 			};
 

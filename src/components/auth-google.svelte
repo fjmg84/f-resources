@@ -8,7 +8,7 @@
 		<div class="flex flex-row items-center gap-2 flex-wrap">
 			<button
 				on:click={() => signOut()}
-				class="bg-red-400 text-zinc-900 rounded-full placeholder-cyan-200 px-5 py-1"
+				class="bg-white text-zinc-900 rounded-full placeholder-cyan-200 px-5 py-1"
 			>
 				<picture class="flex items-center gap-2">
 					<p class="text-sm">{$page.data.session.user?.name}</p>
