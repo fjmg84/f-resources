@@ -44,6 +44,7 @@ export const POSTS_BY_CATEGORY_QUERY = gql`
 			title
 			link
 			image
+			description
 			categories {
 				name
 			}
