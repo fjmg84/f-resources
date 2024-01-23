@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { countCategories } from '$lib/services.js';
 	import type { Connection, Post } from '$lib/types.js';
+	import { getAllPostQuery, getPostByCategoryQuery, paginationPostQuery } from '$lib/hygraph';
+	import { FILTER_ALL_POSTS } from '$lib/constant';
 	import Scrapping from '../components/scrapping.svelte';
 	import ListCategories from '../components/list-categories.svelte';
-	import { FILTER_ALL_POSTS } from '$lib/constant';
 	import ListPosts from '../components/list-posts.svelte';
 	import Toast from '../components/toast.svelte';
-	import { allPostQuery, getPostByCategoryQuery, paginationPostQuery } from '$lib/hygraph';
 
 	export let data;
 	export let form;
@@ -18,7 +18,7 @@
 
 	const filterByCategory = (category: string) => async () => {
 		if (category === FILTER_ALL_POSTS) {
-			const { posts: allPost }: { posts: Post[] } = await allPostQuery();
+			const { posts: allPost }: { posts: Post[] } = await getAllPostQuery();
 			posts = allPost;
 			categorySelected = category;
 			return;
@@ -43,7 +43,7 @@
 </script>
 
 {#if session}
-	<Scrapping />
+	<Scrapping {categories} />
 {/if}
 
 <ul class="flex gap-5 flex-wrap">
