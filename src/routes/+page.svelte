@@ -31,9 +31,12 @@
 	};
 
 	const showMorePost = async () => {
-		let countPage = pageSize * 10;
+		let countPage = pageSize + 10;
+		console.log(countPage);
 		const { posts: newListPosts, postsConnection }: { posts: Post[]; postsConnection: Connection } =
 			await paginationPostQuery(countPage);
+
+		console.log({ newListPosts, postsConnection });
 
 		posts = newListPosts;
 		pageSize = countPage;

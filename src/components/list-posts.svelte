@@ -4,8 +4,6 @@
 
 	export let posts: Post[],
 		filterByCategory: (arg0: string) => MouseEventHandler<HTMLButtonElement> | null | undefined;
-
-	console.log(posts);
 </script>
 
 <ul class="flex flex-wrap gap-5 items-start justify-center">
