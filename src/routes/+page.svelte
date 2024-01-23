@@ -4,11 +4,11 @@
 	import type { Connection, Post } from '$lib/types.js';
 	import { GraphQLClient } from 'graphql-request';
 	import Scrapping from '../components/scrapping.svelte';
-	import { toasts, ToastContainer, FlatToast } from 'svelte-toasts';
-	import type { ToastType } from 'svelte-toasts/types/common';
+
 	import ListCategories from '../components/list-categories.svelte';
 	import { FILTER_ALL_POSTS } from '$lib/constant';
 	import ListPosts from '../components/list-posts.svelte';
+	import Toast from '../components/toast.svelte';
 
 	export let data;
 	export let form;
@@ -21,34 +21,6 @@
 	const hygraph = new GraphQLClient(import.meta.env.VITE_GRAPHQL_URL, {
 		headers: {}
 	});
-
-	const showToast = ({
-		title,
-		description,
-		type
-	}: {
-		title: string;
-		description: string;
-		type: ToastType;
-	}) => {
-		toasts.add({
-			title,
-			description,
-			duration: 10000, // 0 or negative to avoid auto-remove
-			placement: 'top-right',
-			type,
-			theme: 'dark',
-			onClick: () => {},
-			onRemove: () => {}
-			// component: BootstrapToast, // allows to override toast component/template per toast
-		});
-
-		//toast.remove()
-	};
-
-	if (form?.error) showToast({ title: 'Error', description: form.message, type: 'error' });
-
-	if (form?.success) showToast({ title: 'Info', description: form.message, type: 'success' });
 
 	const filterByCategory = (category: string) => async () => {
 		if (category === FILTER_ALL_POSTS) {
@@ -115,8 +87,4 @@
 		</button>
 	{/if}
 </div>
-
-<ToastContainer placement="bottom-right" let:data>
-	<FlatToast {data} />
-	<!-- Provider template for your toasts -->
-</ToastContainer>
+<Toast {form} />
