@@ -15,7 +15,7 @@ export const load = async (event): Promise<any> => {
 	const { posts, postsConnection }: { posts: Post[]; postsConnection: Connection } =
 		await hygraph.request(GET_ALL_POSTS_QUERY, {
 			page: 10,
-			category: ""
+			category: ''
 		});
 
 	return {
@@ -35,7 +35,8 @@ export const actions = {
 		if (url !== null) {
 			const page = await extract(url as string);
 
-			if (page === null) return { error: 'Page not found' };
+			if (page === null)
+				return { error: true, message: 'Sorry, could not read page meta data. :(!!' };
 
 			const image = page?.image === '' ? NOT_IMAGE : page?.image;
 
