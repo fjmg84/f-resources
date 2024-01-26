@@ -2,7 +2,7 @@ import { gql } from 'graphql-request';
 
 export const GET_ALL_CATEGORIES = gql`
 	query Category {
-		categories {
+		categories(first: 100) {
 			name
 		}
 	}
