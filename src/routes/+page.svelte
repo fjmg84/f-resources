@@ -98,7 +98,7 @@
 <div class="flex justify-center items-center">
 	{#if hasNextPage}
 		<button
-			class="bg-white text-zinc-800 rounded-full px-5 py-4 hover:text-white hover:bg-zinc-800 transition-all duration-300 ease-linear"
+			class="flex items-center gap-2 text-zinc-800 bg-white py-2 px-5 rounded-full hover:bg-zinc-800 hover:text-white transition-all duration-300 ease-linear"
 			on:click={pagination(categorySelected)}
 			>show me more
 		</button>

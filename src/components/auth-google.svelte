@@ -8,7 +8,7 @@
 		<div class="flex flex-row items-center gap-2 flex-wrap">
 			<button
 				on:click={() => signOut()}
-				class="bg-white text-zinc-900 rounded-full placeholder-cyan-200 px-5 py-1"
+				class="flex items-center gap-2 text-zinc-800 bg-white py-2 px-5 rounded-full hover:bg-zinc-800 hover:text-white transition-all duration-300 ease-linear"
 			>
 				<picture class="flex items-center gap-2">
 					<p class="text-sm">{$page.data.session.user?.name}</p>
@@ -19,7 +19,7 @@
 	{:else}
 		<button
 			on:click={() => signIn('google')}
-			class="text-sm bg-white text-zinc-900 px-5 py-1 rounded-full flex items-center gap-2"
+			class="flex items-center gap-2 text-zinc-800 bg-white py-2 px-5 rounded-full hover:bg-zinc-800 hover:text-white transition-all duration-300 ease-linear"
 			>Sign in with <img
 				src="/google-icon.svg"
 				alt="google icons"

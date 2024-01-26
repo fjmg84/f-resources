@@ -41,7 +41,7 @@
 					<li>
 						<button
 							on:click={filterByCategory(name)}
-							class=" capitalize flex items-center justify-center bg-zinc-800 text-white rounded-full h-8 px-4 text-sm text-nowrap"
+							class="capitalize flex items-center justify-center bg-zinc-800 text-white rounded-full h-8 px-4 text-sm text-nowrap"
 						>
 							{name}
 						</button>
