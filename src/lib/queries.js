@@ -1,6 +1,6 @@
 import { gql } from 'graphql-request';
 
-export const ALL_CATEGORIES = gql`
+export const GET_ALL_CATEGORIES = gql`
 	query Category {
 		categories {
 			name
@@ -8,9 +8,9 @@ export const ALL_CATEGORIES = gql`
 	}
 `;
 
-export const ALL_POSTS_QUERY = gql`
-	query Post($page: Int) {
-		posts(first: $page) {
+export const GET_ALL_POSTS_QUERY = gql`
+	query Post($page: Int, $category: String) {
+		posts(where: { categories_some: { name_contains: $category } }, first: $page) {
 			id
 			title
 			image
@@ -22,7 +22,7 @@ export const ALL_POSTS_QUERY = gql`
 			free
 			description
 		}
-		postsConnection(first: $page) {
+		postsConnection(where: { categories_some: { name_contains: $category } }, first: $page) {
 			edges {
 				node {
 					id
@@ -32,21 +32,6 @@ export const ALL_POSTS_QUERY = gql`
 				pageSize
 				hasPreviousPage
 				hasNextPage
-			}
-		}
-	}
-`;
-
-export const POSTS_BY_CATEGORY_QUERY = gql`
-	query Post($category: String) {
-		posts(where: { categories_some: { name: $category } }) {
-			id
-			title
-			link
-			image
-			description
-			categories {
-				name
 			}
 		}
 	}

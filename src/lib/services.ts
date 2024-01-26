@@ -1,4 +1,8 @@
-import type { Post } from './types';
+import { GraphQLClient } from 'graphql-request';
+import { GET_ALL_CATEGORIES, GET_ALL_POSTS_QUERY } from './queries';
+import type { Connection, Post } from './types';
+
+const hygraph = new GraphQLClient(import.meta.env.VITE_GRAPHQL_URL);
 
 export const countCategories = ({ posts = [] }: { posts: Post[] }) => {
 	let categoryList: any[] = [];
@@ -16,3 +20,25 @@ export const countCategories = ({ posts = [] }: { posts: Post[] }) => {
 
 	return categoryList;
 };
+
+interface PostResponse {
+	posts: Post[];
+	postsConnection: Connection;
+}
+
+export const getAllPostQuery = async ({ page, category }: { page: number; category: string }) => {
+	try {
+		const response: PostResponse = await hygraph.request(GET_ALL_POSTS_QUERY, {
+			page,
+			category
+		});
+
+		return {
+			posts: response.posts.map((post) => post),
+			infoPage: response.postsConnection.pageInfo
+		};
+	} catch (error) {
+		return { error: true, message: 'Sorry an error occurred, :(!!' };
+	}
+};
+export const getAllCategoriesQuery = async () => await hygraph.request(GET_ALL_CATEGORIES);

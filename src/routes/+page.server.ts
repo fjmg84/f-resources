@@ -1,5 +1,5 @@
 import { extract } from '@extractus/article-extractor';
-import { ALL_POSTS_QUERY, SET_NEW_POST } from '$lib/queries';
+import { GET_ALL_POSTS_QUERY, SET_NEW_POST } from '$lib/queries';
 import { NOT_IMAGE, HYGRAPH_MUTATION_TOKEN } from '$env/static/private';
 import type { Connection, Post } from '$lib/types';
 import { countCategories } from '$lib/services';
@@ -13,8 +13,9 @@ const hygraph = new GraphQLClient(import.meta.env.VITE_GRAPHQL_URL, {
 
 export const load = async (event): Promise<any> => {
 	const { posts, postsConnection }: { posts: Post[]; postsConnection: Connection } =
-		await hygraph.request(ALL_POSTS_QUERY, {
-			page: 10
+		await hygraph.request(GET_ALL_POSTS_QUERY, {
+			page: 10,
+			category: ""
 		});
 
 	return {

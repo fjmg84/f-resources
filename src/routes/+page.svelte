@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { countCategories } from '$lib/services.js';
-	import type { Connection, Post } from '$lib/types.js';
-	import { getAllPostQuery, getPostByCategoryQuery, paginationPostQuery } from '$lib/hygraph';
+	import type { Post } from '$lib/types.js';
+	import { getAllPostQuery } from '$lib/services';
 	import { FILTER_ALL_POSTS } from '$lib/constant';
 	import Scrapping from '../components/scrapping.svelte';
 	import ListCategories from '../components/list-categories.svelte';
 	import ListPosts from '../components/list-posts.svelte';
 	import Toast from '../components/toast.svelte';
+	import type { ActionData } from './$types.js';
 
 	export let data;
 	export let form;
@@ -17,29 +18,55 @@
 	let categorySelected = FILTER_ALL_POSTS;
 
 	const filterByCategory = (category: string) => async () => {
-		if (category === FILTER_ALL_POSTS) {
-			const { posts: allPost }: { posts: Post[] } = await getAllPostQuery();
-			posts = allPost;
-			categorySelected = category;
+		let countPage = pageSize >= 10 ? 10 : pageSize + 10;
+
+		try {
+			const response = await getAllPostQuery({
+				page: countPage,
+				category: category === FILTER_ALL_POSTS ? '' : category
+			});
+
+			if (response?.error) return;
+
+			if (response.posts) {
+				posts = response.posts;
+				pageSize = countPage;
+				categorySelected = category;
+				hasNextPage = response.infoPage?.hasNextPage;
+				categories = countCategories({ posts: response.posts });
+			}
+
+			return;
+		} catch (error) {
+			console.log(error);
+			form = error as ActionData;
 			return;
 		}
-
-		const { posts: postsByCategory }: { posts: Post[] } = await getPostByCategoryQuery(category);
-
-		posts = postsByCategory;
-		categorySelected = category;
 	};
 
-	const showMorePost = async () => {
+	const pagination = (category: string) => async () => {
 		let countPage = pageSize + 10;
 
-		const { posts: newListPosts, postsConnection }: { posts: Post[]; postsConnection: Connection } =
-			await paginationPostQuery(countPage);
+		try {
+			const response = await getAllPostQuery({
+				page: countPage,
+				category: category === FILTER_ALL_POSTS ? '' : category
+			});
 
-		posts = newListPosts;
-		pageSize = countPage;
-		hasNextPage = postsConnection.pageInfo.hasNextPage;
-		categories = countCategories({ posts });
+			if (response?.error) return;
+
+			if (response.posts) {
+				posts = response.posts;
+				pageSize = countPage;
+				hasNextPage = response.infoPage?.hasNextPage;
+				categories = countCategories({ posts: response.posts });
+			}
+			return;
+		} catch (error) {
+			console.log(error);
+			form = error as ActionData;
+			return;
+		}
 	};
 </script>
 
@@ -72,7 +99,7 @@
 	{#if hasNextPage}
 		<button
 			class="bg-white text-zinc-800 rounded-full px-5 py-4 hover:text-white hover:bg-zinc-800 transition-all duration-300 ease-linear"
-			on:click={showMorePost}
+			on:click={pagination(categorySelected)}
 			>show me more
 		</button>
 	{/if}
