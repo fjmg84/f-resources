@@ -1,6 +1,6 @@
 import { GraphQLClient } from 'graphql-request';
 import { GET_ALL_CATEGORIES, GET_ALL_POSTS_QUERY } from './queries';
-import type { Connection, Post } from './types';
+import type { Category, Connection, Post } from './types';
 
 const hygraph = new GraphQLClient(import.meta.env.VITE_GRAPHQL_URL);
 
@@ -41,4 +41,17 @@ export const getAllPostQuery = async ({ page, category }: { page: number; catego
 		return { error: true, message: 'Sorry an error occurred, :(!!' };
 	}
 };
-export const getAllCategoriesQuery = async () => await hygraph.request(GET_ALL_CATEGORIES);
+
+interface CategoriesProps {
+	categories: Category[];
+}
+export const getAllCategoriesQuery = async () => {
+	try {
+		const response: CategoriesProps = await hygraph.request(GET_ALL_CATEGORIES);
+		return {
+			categories: response.categories.map((category) => category)
+		};
+	} catch (error) {
+		return { error: true, message: 'Sorry an error occurred, :(!!' };
+	}
+};

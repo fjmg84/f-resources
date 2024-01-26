@@ -71,7 +71,7 @@
 </script>
 
 {#if session}
-	<Scrapping {categories} />
+	<Scrapping />
 {/if}
 
 <ul class="flex gap-5 flex-wrap">

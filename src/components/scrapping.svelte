@@ -1,8 +1,20 @@
 <script lang="ts">
+	import { getAllCategoriesQuery } from '$lib/services';
 	import type { Category } from '$lib/types';
 
-	export let categories: Category[];
 	let selectedCategories: Category[] = [];
+	let categories: Category[] = [];
+
+	const loadCategories = async () => {
+		const response = await getAllCategoriesQuery();
+
+		if (response?.error) return;
+
+		if (response.categories) {
+			categories = [...response.categories];
+			return;
+		}
+	};
 
 	const selectCategory = (event: any) => {
 		const category = event.target.value;
@@ -37,10 +49,17 @@
 </div>
 
 <form method="post" class="flex flex-wrap gap-5">
-	<select on:change={selectCategory} class="text-zinc-900 p-2 w-full max-w-[500px]">
+	<select
+		on:change={selectCategory}
+		on:focus={loadCategories}
+		class="text-zinc-900 p-2 w-full max-w-[500px]"
+	>
 		<option value={-1}>Select category</option>
+		{#if categories.length === 0}
+			<option value={-1}>loading...</option>
+		{/if}
 		{#each categories as { name }}
-			<option value={name} class="m-6">{name}</option>
+			<option value={name} class="m-6 capitalize">{name}</option>
 		{/each}
 	</select>
 
