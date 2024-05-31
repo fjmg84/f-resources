@@ -12,10 +12,11 @@
 	export let data;
 	export let form;
 
-	let { categories, posts, meta, session } = data;
+	let { categories, counterPost, posts, meta, session } = data;
 	let { pageSize, hasNextPage } = meta;
 
 	let categorySelected = FILTER_ALL_POSTS;
+	
 
 	const filterByCategory = (category: string) => async () => {
 		let countPage = pageSize >= 10 ? 10 : pageSize + 10;
@@ -33,7 +34,7 @@
 				pageSize = countPage;
 				categorySelected = category;
 				hasNextPage = response.infoPage?.hasNextPage;
-				categories = countCategories({ posts: response.posts });
+				/* categories = countCategories({ posts: response.posts }); */
 			}
 
 			return;
@@ -59,7 +60,7 @@
 				posts = response.posts;
 				pageSize = countPage;
 				hasNextPage = response.infoPage?.hasNextPage;
-				categories = countCategories({ posts: response.posts });
+				/* categories = countCategories({ posts: response.posts }); */
 			}
 			return;
 		} catch (error) {
@@ -86,7 +87,7 @@
 			<p class="ml-5">{FILTER_ALL_POSTS}</p>
 			<span
 				class="bg-zinc-500 text-xs font-medium text-white w-8 h-8 rounded-full flex items-center justify-center"
-				>{posts.length}</span
+				>{counterPost}</span
 			>
 		</button>
 	</li>

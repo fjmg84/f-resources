@@ -3,7 +3,15 @@ import { gql } from 'graphql-request';
 export const GET_ALL_CATEGORIES = gql`
 	query Category {
 		categories(first: 100) {
+			id
 			name
+		}
+		posts(first: 100) {
+			id
+			categories {
+				id
+				name
+			}
 		}
 	}
 `;

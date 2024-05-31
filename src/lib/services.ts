@@ -48,10 +48,27 @@ interface CategoriesProps {
 export const getAllCategoriesQuery = async () => {
 	try {
 		const response: CategoriesProps = await hygraph.request(GET_ALL_CATEGORIES);
+
+		console.log(response);
+
 		return {
 			categories: response.categories.map((category) => category)
 		};
 	} catch (error) {
 		return { error: true, message: 'Sorry an error occurred, :(!!' };
 	}
+};
+
+export const orderArray = ({
+	arr = [],
+	field = undefined,
+	type = '<'
+}: {
+	arr: any[];
+	field?: string;
+	type?: string;
+}) => {
+	if (type === '>')
+		return arr.sort((a, b) => (field ? (a[field] > b[field] ? -1 : 1) : a > b ? -1 : 1));
+	else return arr.sort((a, b) => (field ? (a[field] < b[field] ? -1 : 1) : a < b ? -1 : 1));
 };

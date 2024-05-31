@@ -1,8 +1,8 @@
 import { extract } from '@extractus/article-extractor';
-import { GET_ALL_POSTS_QUERY, SET_NEW_POST } from '$lib/queries';
+import { GET_ALL_CATEGORIES, GET_ALL_POSTS_QUERY, SET_NEW_POST } from '$lib/queries';
 import { NOT_IMAGE, HYGRAPH_MUTATION_TOKEN } from '$env/static/private';
-import type { Connection, Post } from '$lib/types';
-import { countCategories } from '$lib/services';
+import type { Category, Connection, ListCategories, Post } from '$lib/types';
+import { countCategories, orderArray } from '$lib/services';
 import { GraphQLClient } from 'graphql-request';
 
 const hygraph = new GraphQLClient(import.meta.env.VITE_GRAPHQL_URL, {
@@ -12,14 +12,36 @@ const hygraph = new GraphQLClient(import.meta.env.VITE_GRAPHQL_URL, {
 });
 
 export const load = async (event): Promise<any> => {
+	const categories: ListCategories = await hygraph.request(GET_ALL_CATEGORIES);
+
+	let categoriesArray: Category[] = [];
+	categories.categories.forEach((category) => {
+		let count = 0;
+		categories.posts.forEach((post) => {
+			post.categories.forEach((p) => {
+				if (p.id === category.id) count++;
+			});
+		});
+
+		categoriesArray = [...categoriesArray, { name: category.name, count }];
+	});
+
 	const { posts, postsConnection }: { posts: Post[]; postsConnection: Connection } =
 		await hygraph.request(GET_ALL_POSTS_QUERY, {
 			page: 10,
 			category: ''
 		});
 
+	const categoriesMayorZero = categoriesArray.filter((c) => c.count && c.count > 0);
+	const categoriesOrder = orderArray({
+		arr: categoriesMayorZero,
+		field: 'count',
+		type: '>'
+	});
+
 	return {
-		categories: countCategories({ posts }),
+		categories: categoriesOrder,
+		counterPost: categories.posts.length,
 		posts,
 		meta: postsConnection.pageInfo
 	};
