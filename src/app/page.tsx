@@ -9,6 +9,8 @@ export default async function HomePage() {
     getAllPostQuery({ page: 10, category: '' }),
   ])
 
+  console.log("Remove this log after testing:")
+
   const { categories, counterPost } = categoriesData
   const initialPosts = 'error' in postsData ? [] : postsData.posts
   const initialHasNextPage = 'error' in postsData ? false : (postsData.infoPage?.hasNextPage ?? false)
