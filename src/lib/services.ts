@@ -1,74 +1,81 @@
-import { GraphQLClient } from 'graphql-request';
-import { GET_ALL_CATEGORIES, GET_ALL_POSTS_QUERY } from './queries';
-import type { Category, Connection, Post } from './types';
+import { GraphQLClient } from 'graphql-request'
+import { GET_ALL_CATEGORIES, GET_ALL_POSTS_QUERY } from './queries'
+import type { Category, Connection, ListCategories, Post } from './types'
 
-const hygraph = new GraphQLClient(import.meta.env.VITE_GRAPHQL_URL);
+type SortableValue = string | number | boolean | undefined
 
-export const countCategories = ({ posts = [] }: { posts: Post[] }) => {
-	let categoryList: any[] = [];
+export const getGraphqlUrl = () => {
+  const url = process.env.GRAPHQL_URL ?? process.env.VITE_GRAPHQL_URL
 
-	posts.forEach(({ categories }) => {
-		categories.forEach(({ name: category }) => {
-			let index = categoryList.findIndex((item) => item.name === category);
-			if (index < 0) {
-				categoryList = [...categoryList, { name: category, count: 1 }];
-			} else {
-				categoryList[index].count++;
-			}
-		});
-	});
+  if (!url) {
+    throw new Error('Missing GRAPHQL_URL. You can also keep using legacy VITE_GRAPHQL_URL.')
+  }
 
-	return categoryList;
-};
+  return url
+}
+
+const getHygraphClient = (token?: string) => {
+  const headers: Record<string, string> = {}
+  if (token) headers['Authorization'] = `Bearer ${token}`
+  return new GraphQLClient(getGraphqlUrl(), { headers })
+}
+
+export const orderArray = <T extends object>({
+  arr = [],
+  field = undefined,
+  type = '<',
+}: {
+  arr: T[]
+  field?: keyof T
+  type?: string
+}) => {
+  return arr.sort((a, b) => {
+    const left = field ? ((a[field] as SortableValue) ?? '') : String(a)
+    const right = field ? ((b[field] as SortableValue) ?? '') : String(b)
+
+    if (left === right) return 0
+    if (type === '>') return left > right ? -1 : 1
+    return left < right ? -1 : 1
+  })
+}
 
 interface PostResponse {
-	posts: Post[];
-	postsConnection: Connection;
+  posts: Post[]
+  postsConnection: Connection
 }
 
 export const getAllPostQuery = async ({ page, category }: { page: number; category: string }) => {
-	try {
-		const response: PostResponse = await hygraph.request(GET_ALL_POSTS_QUERY, {
-			page,
-			category
-		});
-
-		return {
-			posts: response.posts.map((post) => post),
-			infoPage: response.postsConnection.pageInfo
-		};
-	} catch (error) {
-		return { error: true, message: 'Sorry an error occurred, :(!!' };
-	}
-};
-
-interface CategoriesProps {
-	categories: Category[];
+  try {
+    const hygraph = getHygraphClient()
+    const response: PostResponse = await hygraph.request(GET_ALL_POSTS_QUERY, { page, category })
+    return {
+      posts: response.posts,
+      infoPage: response.postsConnection.pageInfo,
+    }
+  } catch {
+    return { error: true, message: 'Sorry an error occurred :(' }
+  }
 }
-export const getAllCategoriesQuery = async () => {
-	try {
-		const response: CategoriesProps = await hygraph.request(GET_ALL_CATEGORIES);
 
-		console.log(response);
+export const getAllCategoriesWithCounts = async (): Promise<{
+  categories: Category[]
+  counterPost: number
+}> => {
+  const hygraph = getHygraphClient()
+  const data: ListCategories = await hygraph.request(GET_ALL_CATEGORIES)
 
-		return {
-			categories: response.categories.map((category) => category)
-		};
-	} catch (error) {
-		return { error: true, message: 'Sorry an error occurred, :(!!' };
-	}
-};
+  const categoriesArray: Category[] = data.categories.map((category) => {
+    let count = 0
+    data.posts.forEach((post) => {
+      post.categories.forEach((p) => {
+        if (p.id === category.id) count++
+      })
+    })
+    return { name: category.name, count }
+  })
 
-export const orderArray = ({
-	arr = [],
-	field = undefined,
-	type = '<'
-}: {
-	arr: any[];
-	field?: string;
-	type?: string;
-}) => {
-	if (type === '>')
-		return arr.sort((a, b) => (field ? (a[field] > b[field] ? -1 : 1) : a > b ? -1 : 1));
-	else return arr.sort((a, b) => (field ? (a[field] < b[field] ? -1 : 1) : a < b ? -1 : 1));
-};
+  const withPosts = categoriesArray.filter((c) => c.count && c.count > 0)
+  const ordered = orderArray({ arr: withPosts, field: 'count', type: '>' })
+
+  return { categories: ordered, counterPost: data.posts.length }
+}

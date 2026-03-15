@@ -1,38 +1,51 @@
-# create-svelte
+# f-resources
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+Coleccion de recursos curados, migrada de SvelteKit a Next.js 15 con App Router.
 
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
+## Desarrollo
 
 ```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
+pnpm install
+pnpm run dev
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Build
 
 ```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+pnpm exec next build
+pnpm run start
 ```
 
-## Building
+## Variables de entorno
 
-To create a production version of your app:
+Crea un archivo `.env` tomando como referencia `.env.example`.
 
-```bash
-npm run build
-```
+Variables principales:
 
-You can preview the production build with `npm run preview`.
+- `AUTH_SECRET`
+- `AUTH_URL`
+- `AUTH_GOOGLE_ID`
+- `AUTH_GOOGLE_SECRET`
+- `GRAPHQL_URL`
+- `HYGRAPH_MUTATION_TOKEN`
+- `NOT_IMAGE`
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+Compatibilidad temporal con la migracion:
+
+- `CLIENT_ID` funciona como fallback de `AUTH_GOOGLE_ID`
+- `SECRET_ID` funciona como fallback de `AUTH_GOOGLE_SECRET`
+- `VITE_GRAPHQL_URL` funciona como fallback de `GRAPHQL_URL`
+
+## Google OAuth
+
+En Google Cloud Console, el cliente OAuth debe tener estas URIs autorizadas:
+
+- `http://localhost:3000/api/auth/callback/google`
+- `https://tu-dominio.com/api/auth/callback/google`
+
+Y en `Authorized JavaScript origins`:
+
+- `http://localhost:3000`
+- `https://tu-dominio.com`
+
+Si vienes de SvelteKit, revisa que no haya quedado registrado el callback anterior. En NextAuth el callback correcto es `/api/auth/callback/google`.
