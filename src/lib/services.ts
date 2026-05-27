@@ -5,10 +5,10 @@ import type { Category, Connection, ListCategories, Post } from './types'
 type SortableValue = string | number | boolean | undefined
 
 export const getGraphqlUrl = () => {
-  const url = process.env.GRAPHQL_URL ?? process.env.VITE_GRAPHQL_URL
+  const url = process.env.HYGRAPH_URL
 
   if (!url) {
-    throw new Error('Missing GRAPHQL_URL. You can also keep using legacy VITE_GRAPHQL_URL.')
+    throw new Error('Missing HYGRAPH_URL. You can also keep using legacy HYGRAPH_URL.')
   }
 
   return url
